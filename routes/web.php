@@ -30,14 +30,10 @@ Route::get('/inertia-test', function () {
     return Inertia::render('InertiaTest');
 });
 
-Route::get('/inertia/index', [InertiaTestController::class, 'index'])
-    ->name('inertia.index');
-
-Route::post('/inertia', [InertiaTestController::class, 'store'])
-    ->name('inertia.store');
-
-Route::get('/inertia/show/{id}', [InertiaTestController::class, 'show'])
-    ->name('inertia.show');
+Route::get('/inertia/index', [InertiaTestController::class, 'index'])->name('inertia.index');
+Route::get('/inertia/create', [InertiaTestController::class, 'create'])->name('inertia.create');
+Route::post('/inertia', [InertiaTestController::class, 'store'])->name('inertia.store');
+Route::get('/inertia/show/{id}', [InertiaTestController::class, 'show'])->name('inertia.show');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
