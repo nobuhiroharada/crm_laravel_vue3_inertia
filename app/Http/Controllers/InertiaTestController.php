@@ -10,7 +10,9 @@ class InertiaTestController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Inertia/Index');
+        return Inertia::render('Inertia/Index', [
+            'blogs' => InertiaTest::all(),
+        ]);
     }
 
     public function create()
@@ -34,7 +36,7 @@ class InertiaTestController extends Controller
             'content' => ['required',],
         ]);
 
-        $inertiaTest = new InertiaTest();
+        $inertiaTest = new InertiaTest;
         $inertiaTest->title = $request->title;
         $inertiaTest->content = $request->content;
         $inertiaTest->save();
