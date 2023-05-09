@@ -5,27 +5,30 @@ import { reactive } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import BreezeValidationErrors from '@/Components/ValidationErrors.vue'; 
 
-defineProps({
+const props = defineProps({
     errors: Object,
+    item: Object,
 })
 
 const form = reactive({
-    name: null,
-    memo: null,
-    price: null,
+    id: props.item.id,
+    name: props.item.name,
+    memo: props.item.memo,
+    price: props.item.price,
+    is_selling: props.item.is_selling,
 });
 
-const storeItem = () => {
-    Inertia.post('/items', form);
+const updateItem = id => {
+    Inertia.put(route('items.update', { item: id }), form);
 }
 </script>
 
 <template>
-    <Head title="商品登録" />
+    <Head title="商品編集" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">商品登録</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">商品編集</h2>
         </template>
 
         <div class="py-12">
@@ -33,7 +36,7 @@ const storeItem = () => {
                 <div class="p-6 bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <BreezeValidationErrors :errors="errors" class="mb-4" />
                     <section class="text-gray-600 body-font relative">
-                        <form @submit.prevent="storeItem">
+                        <form @submit.prevent="updateItem(form.id)">
                             <div class="container px-5 py-8 mx-auto">
                                 <div class="lg:w-1/2 md:w-2/3 mx-auto">
                                     <div class="flex flex-wrap -m-2">
@@ -56,7 +59,16 @@ const storeItem = () => {
                                             </div>
                                         </div>
                                         <div class="p-2 w-full">
-                                            <button class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">商品登録</button>
+                                            <div class="relative">
+                                                <label for="is_selling" class="leading-7 text-sm text-gray-600">ステータス</label>
+                                                <input type="radio" id="is_selling" name="is_selling" v-model="form.is_selling" value="1" class="">
+                                                <label class="ml-2 mr-4">販売中</label>
+                                                <input type="radio" id="is_selling" name="is_selling" v-model="form.is_selling" value="0" class="">
+                                                <label class="ml-2 mr-4">停止中</label>
+                                            </div>
+                                        </div>
+                                        <div class="p-2 w-full">
+                                            <button class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">更新する</button>
                                         </div>
                                     </div>
                                 </div>
