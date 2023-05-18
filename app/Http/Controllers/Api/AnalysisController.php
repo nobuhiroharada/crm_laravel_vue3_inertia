@@ -19,6 +19,14 @@ class AnalysisController extends Controller
             list($data, $labels, $totals) = AnalysisService::perDay($subQuery);
         }
 
+        if($request->type === 'perMonth') {
+            list($data, $labels, $totals) = AnalysisService::perMonth($subQuery);
+        }
+
+        if($request->type === 'perYear') {
+            list($data, $labels, $totals) = AnalysisService::perYear($subQuery);
+        }
+
         return response()->json([
             'data' => $data,
             'type' => $request->type,
