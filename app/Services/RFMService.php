@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use App\Models\Order;
+use Illuminate\Support\Facades\Log;
 
 class RFMService
 {
@@ -51,24 +52,31 @@ class RFMService
                     ELSE 1
                 END AS m', $rfmParams);
 
+        // Log::debug($subQuery->get());
+
         // 5. ランク毎の数を計算する
         $totals = DB::table($subQuery)->count();
 
         $rCount = DB::table($subQuery)
-            ->groupBy('r')
-            ->selectRaw('r, COUNT(r)')
+            ->rightJoin('ranks', 'ranks.rank', '=', 'r')
+            ->groupBy('rank')
+            ->selectRaw('rank AS r, COUNT(r)')
             ->orderBy('r', 'DESC')
             ->pluck('COUNT(r)');
 
+        // Log::debug($rCount);
+
         $fCount = DB::table($subQuery)
-            ->groupBy('f')
-            ->selectRaw('f, COUNT(f)')
+            ->rightJoin('ranks', 'ranks.rank', '=', 'f')
+            ->groupBy('rank')
+            ->selectRaw('rank AS f, COUNT(f)')
             ->orderBy('f', 'DESC')
             ->pluck('COUNT(f)');
 
         $mCount = DB::table($subQuery)
-            ->groupBy('m')
-            ->selectRaw('m, COUNT(m)')
+            ->rightJoin('ranks', 'ranks.rank', '=', 'm')
+            ->groupBy('rank')
+            ->selectRaw('rank AS m, COUNT(m)')
             ->orderBy('m', 'DESC')
             ->pluck('COUNT(m)');
 
@@ -87,8 +95,9 @@ class RFMService
     
         // 6. RとFで2次元で表示してみる
         $data = DB::table($subQuery)
-            ->groupBy('r')
-            ->selectRaw('CONCAT("r_", r) AS rRank,
+            ->rightJoin('ranks', 'ranks.rank', '=', 'r')
+            ->groupBy('rank')
+            ->selectRaw('CONCAT("r_", rank) AS rRank,
                 COUNT(CASE WHEN f = 5 THEN 1 END) AS f_5,
                 COUNT(CASE WHEN f = 4 THEN 1 END) AS f_4,
                 COUNT(CASE WHEN f = 3 THEN 1 END) AS f_3,
